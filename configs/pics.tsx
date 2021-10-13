@@ -20,6 +20,6 @@ const pics = {
     h:h.src,
     sl:sl.src,
     sn:sn.src,
-}
+};
 
 export default pics;
