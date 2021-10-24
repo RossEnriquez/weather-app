@@ -8,6 +8,7 @@ import t from "../weather-app-master/Thunderstorm.png";
 import h from "../weather-app-master/Hail.png";
 import sl from "../weather-app-master/Sleet.png";
 import sn from "../weather-app-master/Snow.png";
+import bg from "../weather-app-master/Cloud-background.png";
 
 const pics = {
     c:c.src,
@@ -20,6 +21,7 @@ const pics = {
     h:h.src,
     sl:sl.src,
     sn:sn.src,
+    bg:bg.src
 };
 
 export default pics;

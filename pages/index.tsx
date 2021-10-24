@@ -5,15 +5,18 @@ import {
  Flex,
  Heading,
  Icon,
+ IconButton,
  Image,
  Text,
  Wrap,
  WrapItem,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import pics from "../configs/pics";
-import hailImage from "../weather-app-master/Hail.png";
-import {RiCompassDiscoverFill} from "react-icons/Ri/"
+import initWeather from "../configs/initWeather";
+import {RiCompassDiscoverFill} from "react-icons/Ri/";
+import {MdGpsFixed, MdPinDrop} from "react-icons/Md/";
+
 
 const IndexPage = () => {
   const weatherDayProps={
@@ -33,8 +36,9 @@ const IndexPage = () => {
   }
 
   const reqURL='http://localhost:8010/proxy/';
-  // const [weatherData, setWeatherData] = useState([]);
-  const [weatherData, setWeatherData] = useState([]);
+  const [weatherData, setWeatherData] = useState(initWeather);
+  console.log(initWeather);
+
   if (process.browser){
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -64,29 +68,43 @@ const IndexPage = () => {
         alert(Error);
     }
   }
+
   return (
    <Flex>
      <Box bg="#1e213a" id="current-day-weather" w="30vw" h="100vh">
        <Flex p={5} justifyContent="space-between">
          <Button bg="gray.400">Search for places</Button>
-         <Button bg="gray.400" onClick={()=>{getWeatherData()}}>(Icon)</Button>
+         <IconButton aria-label="Use Current Location" 
+          icon={<MdGpsFixed size="60%"/>} 
+          bg="gray.400" 
+          borderRadius="20px"
+          onClick={()=>{getWeatherData()}}/>
        </Flex>
-       <Center flexDir="column" bg="#1e213a">
+       <Center flexDir="column" bg="#1e213a" justifyContent="space-between">
+         <Image src={pics["bg"]} w="550px" zIndex={0} position="fixed" opacity="10%"/>
          <Box w="50%" mb={20} id="current-day-img-container">
-           <Image src={pics[weatherData[0].weather_state_abbr]} w="100%" h="100%" />
+          <Image src={pics[weatherData[0].weather_state_abbr]} zIndex={1} w="100%" h="100%"/>
          </Box>
-         <Heading mb={20} color="#e7e7eb" fontSize="6xl">{Number(weatherData[0].max_temp).toFixed(0)} C</Heading>
-         <Heading mb={10} color="#e7e7eb" fontSize="2xl">
+         <Flex>
+           <Heading mb={20} color="#e7e7eb" fontSize="9xl" fontWeight="normal">{Number(weatherData[0].max_temp).toFixed(0)}</Heading>
+           <Heading color="#e7e7eb" fontSize="2xl" fontWeight="normal">o</Heading>
+           <Heading color="#e7e7eb" fontSize="5xl" fontWeight="normal">C</Heading>
+         </Flex>
+         <Heading mb={20} color="#e7e7eb" fontSize="2xl">
            {weatherData[0].weather_state_name}
          </Heading>
-         <Flex mb={10}>
-           <Text color="#e7e7eb">Today</Text>
-           <Text color="#e7e7eb">(Oct 6th, 2021)</Text>
+         <Flex mb={5}>
+           <Text color="#616475" m="0 10px">Today</Text>
+           <Text color="#616475" m="0 10px">Oct 6th, 2021</Text>
          </Flex>
-         <Text color="#e7e7eb">Toronto</Text>
+         <Flex>
+           <MdPinDrop color="#616475" size="20px"/>
+           <Text color="#616475">Toronto</Text>
+         </Flex>
+         
        </Center>
      </Box>
-     <Center bg="#100e1d" id="weeks-weather" w="70vw" h="100vh" p="30px 150px" display="inline-block">
+     <Center bg="#100e1d" id="weeks-weather" w="70vw" h="100vh" p="30px 150px" display="inline-block" zIndex={1}>
         <Flex justifyContent="flex-end" w="100%">
           <Button borderRadius="20px" mr="10px">C</Button>
           <Button borderRadius="20px">F</Button>
