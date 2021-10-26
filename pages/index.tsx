@@ -7,6 +7,7 @@ import {
  Icon,
  IconButton,
  Image,
+ Progress,
  Text,
  Wrap,
  WrapItem,
@@ -37,7 +38,8 @@ const IndexPage = () => {
 
   const reqURL='http://localhost:8010/proxy/';
   const [weatherData, setWeatherData] = useState(initWeather);
-  console.log(initWeather);
+  const [dates, setDates] = useState([]);
+  // console.log(initWeather);
 
   if (process.browser){
     navigator.geolocation.getCurrentPosition(
@@ -62,23 +64,42 @@ const IndexPage = () => {
         `${reqURL}${woeid}`);
         const response2Data = await response2.json();
         setWeatherData(response2Data.consolidated_weather);
-        console.log(weatherData);
+
+        getDates();
     }
     catch (Error){
         alert(Error);
     }
   }
 
+  function getDates(){
+    var dateTemp = [];
+    weatherData.map((day, i)=>{
+      const createdAt = day.created.substring(10);
+      const applicableAt = day.applicable_date;
+      var currDate = new Date(applicableAt.replace(/-/g, '\/')).toDateString();
+
+      if (i == 0 || i != 1){
+        dateTemp[i] = currDate.substring(0, currDate.length-4)
+      }
+      else{
+        dateTemp[1] = "Tomorrow";
+      }
+    });
+    setDates(dateTemp);
+  }
+
   return (
    <Flex>
      <Box bg="#1e213a" id="current-day-weather" w="30vw" h="100vh">
        <Flex p={5} justifyContent="space-between">
-         <Button bg="gray.400">Search for places</Button>
+         <Button bg="gray.400" borderRadius="0" color="white">Search for places</Button>
          <IconButton aria-label="Use Current Location" 
           icon={<MdGpsFixed size="60%"/>} 
           bg="gray.400" 
           borderRadius="20px"
-          onClick={()=>{getWeatherData()}}/>
+          color="white"
+          onClick={()=>{getWeatherData();}}/>
        </Flex>
        <Center flexDir="column" bg="#1e213a" justifyContent="space-between">
          <Image src={pics["bg"]} w="550px" zIndex={0} position="fixed" opacity="10%"/>
@@ -95,7 +116,7 @@ const IndexPage = () => {
          </Heading>
          <Flex mb={5}>
            <Text color="#616475" m="0 10px">Today</Text>
-           <Text color="#616475" m="0 10px">Oct 6th, 2021</Text>
+           <Text color="#616475" m="0 10px">{dates[0]}</Text>
          </Flex>
          <Flex>
            <MdPinDrop color="#616475" size="20px"/>
@@ -106,17 +127,19 @@ const IndexPage = () => {
      </Box>
      <Center bg="#100e1d" id="weeks-weather" w="70vw" h="100vh" p="30px 150px" display="inline-block" zIndex={1}>
         <Flex justifyContent="flex-end" w="100%">
-          <Button borderRadius="20px" mr="10px">C</Button>
-          <Button borderRadius="20px">F</Button>
+          <Button borderRadius="20px" mr="10px" color="white" bg="#585676">C</Button>
+          <Button borderRadius="20px" color="white" bg="#585676">F</Button>
         </Flex>
         <Flex justifyContent="space-between" m="50px 0">
           {weatherData.map((day, i)=>{
             if (i != 0){
               return (
-                <Center {...weatherDayProps} display="block" p="15px" bg="#1e213a" key={i}>
-                  <Text color="#e7e7eb" textAlign="center" fontWeight="bold">{day.weather_state_name}</Text>
-                  <Image m="auto" src={pics[day.weather_state_abbr]} boxSize="100px"/>
-                  <Text color="#e7e7eb" textAlign="center" fontWeight="bold">{Number(day.max_temp).toFixed(0)} C </Text>
+                <Center {...weatherDayProps} display="block" p="15px" h="210px" bg="#1e213a" key={i}>
+                  <Text color="#e7e7eb" textAlign="center" fontWeight="normal">{dates[i]}</Text>
+                  <Center m="auto" w="100px" h="110px">
+                    <Image m="auto" src={pics[day.weather_state_abbr]} w="90px"/>
+                  </Center>
+                  <Text color="#e7e7eb" textAlign="center" fontWeight="normal">{Number(day.max_temp).toFixed(0)} C </Text>
                   <Text color="#616475" textAlign="center">{Number(day.min_temp).toFixed(0)} C</Text>
                 </Center>
               );
@@ -136,7 +159,14 @@ const IndexPage = () => {
           <Center {...todayHighlightProps}>
             <Text color="#e7e7eb" textAlign="center">Humidity</Text>
             <Text color="#e7e7eb" textAlign="center" fontWeight="bold" fontSize="6xl">{weatherData[0].humidity}%</Text>
-            <Text color="#e7e7eb" textAlign="center">Scale</Text>
+            <Flex justifyContent="space-between" w="80%" m="0 45px">
+              <Text color="#e7e7eb" textAlign="center">0</Text>
+              <Text color="#e7e7eb" textAlign="center">50</Text>
+              <Text color="#e7e7eb" textAlign="center">100</Text>
+            </Flex>
+            <Progress value={weatherData[0].humidity} w="80%" m="0px 45px" borderRadius="8px" colorScheme="yellow"/>
+            <Text color="#e7e7eb" textAlign="right" w="80%" m="0px 45px">%</Text>
+            
           </Center>
         </Flex>
         <Flex justifyContent="space-between">
