@@ -39,13 +39,14 @@ const IndexPage = () => {
   const reqURL='http://localhost:8010/proxy/';
   const [weatherData, setWeatherData] = useState(initWeather);
   const [dates, setDates] = useState([]);
+  var lat = 0, long = 0;
   // console.log(initWeather);
 
   if (process.browser){
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const lat = pos.coords.latitude;
-        const long = pos.coords.longitude;
+        lat = pos.coords.latitude;
+        long = pos.coords.longitude;
       },
       () => {
         alert("Could not get users location");
@@ -56,7 +57,7 @@ const IndexPage = () => {
   async function getWeatherData(){
     try{
         const response = await fetch(
-        `${reqURL}search/?lattlong=43.7493,-79.737`);
+        `${reqURL}search/?lattlong=${lat},${long}`);
         const responseData = await response.json();
         const woeid = responseData[0].woeid;
 
@@ -64,6 +65,7 @@ const IndexPage = () => {
         `${reqURL}${woeid}`);
         const response2Data = await response2.json();
         setWeatherData(response2Data.consolidated_weather);
+        console.log(responseData);
 
         getDates();
     }
@@ -93,12 +95,13 @@ const IndexPage = () => {
    <Flex>
      <Box bg="#1e213a" id="current-day-weather" w="30vw" h="100vh">
        <Flex p={5} justifyContent="space-between">
-         <Button bg="gray.400" borderRadius="0" color="white">Search for places</Button>
+         <Button _focus={{boxShadow: "none"}} bg="gray.400" borderRadius="0" color="white">Search for places</Button>
          <IconButton aria-label="Use Current Location" 
           icon={<MdGpsFixed size="60%"/>} 
           bg="gray.400" 
           borderRadius="20px"
           color="white"
+          _focus={{boxShadow: "none"}}
           onClick={()=>{getWeatherData();}}/>
        </Flex>
        <Center flexDir="column" bg="#1e213a" justifyContent="space-between">
@@ -127,8 +130,8 @@ const IndexPage = () => {
      </Box>
      <Center bg="#100e1d" id="weeks-weather" w="70vw" h="100vh" p="30px 150px" display="inline-block" zIndex={1}>
         <Flex justifyContent="flex-end" w="100%">
-          <Button borderRadius="20px" mr="10px" color="white" bg="#585676">C</Button>
-          <Button borderRadius="20px" color="white" bg="#585676">F</Button>
+          <Button _focus={{boxShadow: "none"}} borderRadius="20px" mr="10px" color="white" bg="#585676">C</Button>
+          <Button _focus={{boxShadow: "none"}} borderRadius="20px" color="white" bg="#585676">F</Button>
         </Flex>
         <Flex justifyContent="space-between" m="50px 0">
           {weatherData.map((day, i)=>{
